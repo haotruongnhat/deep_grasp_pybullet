@@ -7,7 +7,7 @@ import torch
 import cv2
 from scipy import ndimage
 import numpy as np
-
+import math
 
 class Models:
     def load_objects(self):
@@ -59,7 +59,6 @@ class YCBModels(Models):
     def __getitem__(self, idx):
         return self.visual_shapes[idx], self.collision_shapes[idx]
 
-
 class Camera:
     def __init__(self, cam_pos, cam_tar, cam_up_vector, near, far, size, fov):
         self.width, self.height = size
@@ -107,3 +106,45 @@ class Camera:
         position[:, :] /= position[:, 3:4]
 
         return position[:, :3].reshape(*x.shape, -1)
+
+class AttachedCamera():
+    def __init__(self, robot, near, far, aspect, fov):
+        """
+        robot: robot instance
+        cam_pos: position related to robot
+
+        """
+        # Initial vectors
+        self.init_camera_pos = (1, 1, 1)
+        self.z_camera_vector = np.array([0, 0, 1])
+        self.y_camera_vector = np.array([0, 1, 0])
+        self.x_camera_vector = np.array([1, 0, 0])
+
+        self.init_camera_vector = (0, 0, 1) # z-axis
+        self.init_up_vector = (0, 1, 0) # y-axis
+
+        self.projection_matrix = p.computeProjectionMatrixFOV(fov, aspect, near, far)
+        self.robot = robot
+
+    def shot(self):
+        # Calculate new view matrix
+        ee_pose = self.robot.get_ee_pose()
+        ee_pos = np.array(ee_pose[:3])
+        ee_ori = np.array(ee_pose[3:])
+        ee_euler = p.getEulerFromQuaternion(ee_ori)
+        rot_matrix = p.getMatrixFromQuaternion(ee_ori)
+        rot_matrix = np.array(rot_matrix).reshape(3, 3)
+
+        # # Rotated vectors
+        camera_vector = rot_matrix.dot(self.init_camera_vector)
+        up_vector = rot_matrix.dot(self.init_up_vector)
+
+        print(ee_euler)
+        import pdb; pdb.set_trace()
+        self.view_matrix = p.computeViewMatrix(ee_pos, ee_pos + camera_vector, up_vector)
+        # self.view_matrix = p.computeViewMatrix(ee_pos, ee_pos - [0, 0, ee_pos[-1]], up_vector)
+
+        # Generate image
+        # _w, _h, rgb, depth, seg = p.getCameraImage(320, 320, self.view_matrix, self.projection_matrix)
+        rgb = None; depth = None; seg = None
+        return rgb, depth, seg

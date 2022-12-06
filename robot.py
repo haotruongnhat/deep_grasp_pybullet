@@ -137,6 +137,16 @@ class RobotBase(object):
         ee_pos = p.getLinkState(self.id, self.eef_id)[0]
         return dict(positions=positions, velocities=velocities, ee_pos=ee_pos)
 
+    def get_ee_pose(self):
+        """
+        return: [px py pz rx ry rz rw]
+        """
+        com_p, com_o, _, _, _, _ = p.getLinkState(self.id, self.eef_id, computeForwardKinematics=True)
+        position = list(com_p)
+        orientation = list(com_o)
+
+        return position + orientation
+
 
 class Panda(RobotBase):
     def __init_robot__(self):

@@ -6,7 +6,7 @@ import pybullet as p
 from tqdm import tqdm
 from env import ClutteredPushGrasp
 from robot import Panda, UR5Robotiq85, UR5Robotiq140
-from utilities import YCBModels, Camera
+from utilities import YCBModels, Camera, AttachedCamera
 import time
 import math
 
@@ -15,13 +15,12 @@ def user_control_demo():
     ycb_models = YCBModels(
         os.path.join('./data/ycb', '**', 'textured-decmp.obj'),
     )
+    robot = UR5Robotiq85((0, 0.5, 0), (0, 0, 0))
+    # camera = AttachedCamera(robot, 0.1, 5, 1.0, 60)
     camera = Camera((1, 1, 1),
                     (0, 0, 0),
                     (0, 0, 1),
                     0.1, 5, (320, 320), 40)
-    camera = None
-    # robot = Panda((0, 0.5, 0), (0, 0, math.pi))
-    robot = UR5Robotiq85((0, 0.5, 0), (0, 0, 0))
     env = ClutteredPushGrasp(robot, ycb_models, camera, vis=True)
 
     env.reset()

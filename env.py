@@ -6,7 +6,7 @@ import numpy as np
 import pybullet as p
 import pybullet_data
 
-from utilities import Models, Camera
+from utilities import Models, Camera, AttachedCamera
 from collections import namedtuple
 from attrdict import AttrDict
 from tqdm import tqdm
@@ -88,6 +88,7 @@ class ClutteredPushGrasp:
         assert control_method in ('joint', 'end')
         self.robot.move_ee(action[:-1], control_method)
         self.robot.move_gripper(action[-1])
+
         for _ in range(120):  # Wait for a few steps
             self.step_simulation()
 
@@ -115,7 +116,7 @@ class ClutteredPushGrasp:
 
     def get_observation(self):
         obs = dict()
-        if isinstance(self.camera, Camera):
+        if isinstance(self.camera, Camera) or isinstance(self.camera, AttachedCamera):
             rgb, depth, seg = self.camera.shot()
             obs.update(dict(rgb=rgb, depth=depth, seg=seg))
         else:
