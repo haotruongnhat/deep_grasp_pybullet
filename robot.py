@@ -141,7 +141,7 @@ class RobotBase(object):
         """
         return: [px py pz rx ry rz rw]
         """
-        com_p, com_o, _, _, _, _ = p.getLinkState(self.id, self.eef_id, computeForwardKinematics=True)
+        com_p, com_o, _, _, _, _ = p.getLinkState(self.id, 8, computeForwardKinematics=True)
         position = list(com_p)
         orientation = list(com_o)
 

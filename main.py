@@ -16,18 +16,12 @@ def user_control_demo():
         os.path.join('./data/ycb', '**', 'textured-decmp.obj'),
     )
     robot = UR5Robotiq85((0, 0.5, 0), (0, 0, 0))
-    # camera = AttachedCamera(robot, 0.1, 5, 1.0, 60)
-    camera = Camera((1, 1, 1),
-                    (0, 0, 0),
-                    (0, 0, 1),
-                    0.1, 5, (320, 320), 40)
+    camera = AttachedCamera(robot, 0.1, 5, 1.0, 60)
     env = ClutteredPushGrasp(robot, ycb_models, camera, vis=True)
 
     env.reset()
-    # env.SIMULATION_STEP_DELAY = 0
     while True:
         obs, reward, done, info = env.step(env.read_debug_parameter(), 'end')
-        # print(obs, reward, done, info)
 
 
 if __name__ == '__main__':

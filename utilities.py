@@ -139,12 +139,8 @@ class AttachedCamera():
         camera_vector = rot_matrix.dot(self.init_camera_vector)
         up_vector = rot_matrix.dot(self.init_up_vector)
 
-        print(ee_euler)
-        import pdb; pdb.set_trace()
-        self.view_matrix = p.computeViewMatrix(ee_pos, ee_pos + camera_vector, up_vector)
-        # self.view_matrix = p.computeViewMatrix(ee_pos, ee_pos - [0, 0, ee_pos[-1]], up_vector)
+        self.view_matrix = p.computeViewMatrix(ee_pos + 0.13 * camera_vector, ee_pos + 0.3 * camera_vector, up_vector)
 
         # Generate image
-        # _w, _h, rgb, depth, seg = p.getCameraImage(320, 320, self.view_matrix, self.projection_matrix)
-        rgb = None; depth = None; seg = None
+        _w, _h, rgb, depth, seg = p.getCameraImage(320, 320, self.view_matrix, self.projection_matrix)
         return rgb, depth, seg
